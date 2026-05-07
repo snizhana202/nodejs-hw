@@ -20,15 +20,6 @@ app.use(cors());
 
 app.use(notesRoutes);
 
-app.get('/notes', (req, res) => {
-  res.status(200).json({ message: 'Retrieved all notes' });
-});
-
-app.get('/notes/:noteId', (req, res) => {
-  res.status(200).json({ message: `Retrieved note with ID: ${req.params.noteId}` });
-});
-
-
 app.use(notFoundHandler);
 
 app.use(errorHandler);
