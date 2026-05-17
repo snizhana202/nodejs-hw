@@ -13,20 +13,22 @@ export const getAllNotes = async (req, res) => {
 
   const skip = (page - 1) * perPage;
 
-  const notesQuery = {};
+  const notesQuery = Note.find();
 
   if (tag) {
-    notesQuery.tag = tag;
+    notesQuery.where('tag').equals(tag);
   }
 
   if (search) {
-    notesQuery.$text = { $search: search };
+    notesQuery.where({ $text: { $search: search } });
   }
 
+  const filter = notesQuery.getFilter();
+
   const [totalNotes, notes] = await Promise.all([
-    Note.countDocuments(notesQuery),
+    Note.countDocuments(filter),
     Note.find(
-      notesQuery,
+      filter,
       search ? { score: { $meta: 'textScore' } } : {}
     )
     .skip(skip)
