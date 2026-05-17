@@ -7,8 +7,6 @@ export const getAllNotes = async (req, res) => {
     perPage = 10,
     tag,
     search,
-    sortBy = '_id',
-    sortOrder = 'asc',
    } = req.query;
 
   const skip = (page - 1) * perPage;
@@ -20,24 +18,19 @@ export const getAllNotes = async (req, res) => {
   }
 
   if (search) {
-    notesQuery.where({ $text: { $search: search } });
+    const regex = new RegExp(search, 'i');
+    notesQuery.or([
+      { title: regex },
+      { content: regex }
+    ]);
   }
 
-  const filter = notesQuery.getFilter();
-
   const [totalNotes, notes] = await Promise.all([
-    Note.countDocuments(filter),
-    Note.find(
-      filter,
-      search ? { score: { $meta: 'textScore' } } : {}
-    )
-    .skip(skip)
-    .limit(perPage)
-    .sort({ [sortBy]: sortOrder}),
+    Note.countDocuments(notesQuery.getFilter()),
+    notesQuery.skip(skip).limit(perPage),
   ]);
 
   const totalPages = Math.ceil(totalNotes / perPage);
-
 
   res.status(200).json({
     page,
