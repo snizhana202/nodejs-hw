@@ -11,7 +11,7 @@ export const registerUser = async (req, res) => {
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    throw createHttpError(409, 'Email is already in use');
+    throw createHttpError(400, 'Email is already in use');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -53,7 +53,7 @@ export const loginUser = async (req, res) => {
 export const logoutUser = async (req, res) => {
   const { sessionId } = req.cookies;
 
-  if (!sessionId) {
+  if (sessionId) {
     await Session.deleteOne({ _id: sessionId });
   }
 
