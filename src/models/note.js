@@ -22,6 +22,11 @@ const noteSchema = new Schema(
       trim: true,
       enum: TAGS,
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    }
   },
   {
     timestamps: true,
@@ -30,6 +35,6 @@ const noteSchema = new Schema(
 );
 
 noteSchema.index({ tag: 1 });
-noteSchema.index({ title: 'text', content: 'text' });
+noteSchema.index({ userId: 1, title: 'text', content: 'text' });
 
 export const Note = model('Note', noteSchema);
