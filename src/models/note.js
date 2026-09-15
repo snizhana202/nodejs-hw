@@ -1,8 +1,6 @@
-// src/models/note.js
-
-import { Schema } from 'mongoose';
-import { model } from 'mongoose';
-import { TAGS } from '../constants/tags.js';
+import { Schema } from "mongoose";
+import { model } from "mongoose";
+import { TAGS } from "../constants/tags.js";
 
 const noteSchema = new Schema(
   {
@@ -13,20 +11,20 @@ const noteSchema = new Schema(
     },
     content: {
       type: String,
-      default: '',
+      default: "",
       trim: true,
     },
     tag: {
       type: String,
-      default: 'Todo',
+      default: "Todo",
       trim: true,
       enum: TAGS,
     },
     userId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
-    }
+    },
   },
   {
     timestamps: true,
@@ -34,7 +32,14 @@ const noteSchema = new Schema(
   },
 );
 
-noteSchema.index({ tag: 1 });
-noteSchema.index({ userId: 1, title: 'text', content: 'text' });
+noteSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
 
-export const Note = model('Note', noteSchema);
+noteSchema.index({ tag: 1 });
+noteSchema.index({ userId: 1, title: "text", content: "text" });
+
+export const Note = model("Note", noteSchema);
